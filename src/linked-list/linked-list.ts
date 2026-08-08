@@ -192,6 +192,228 @@ export default class LinkedList<T> {
     return this;
   }
 
+  findMiddleNode(): Node<T> | null {
+    let slow = this.head;
+    let fast = this.head;
+
+    if (!this.head) {
+      return null;
+    }
+
+    while (fast?.next) {
+      fast = fast?.next?.next ?? null;
+      slow = slow?.next ?? null;
+    }
+
+    return slow;
+  }
+
+  hasLoop(): boolean {
+    let slow = this.head;
+    let fast = this.head;
+
+    if (!this.head) {
+      return false;
+    }
+
+    while (fast?.next) {
+      fast = fast?.next?.next ?? null;
+      slow = slow?.next ?? null;
+      if (fast === slow) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  findKthFromEnd(k: number) {
+    let slow = this.head;
+    let fast = this.head;
+
+    if (!this.head || k <= 0 || k > this.length) {
+      return null;
+    }
+
+    // Move fast k nodes ahead
+    for (let i = 0; i < k; i++) {
+      fast = fast?.next ?? null;
+    }
+
+    // Move both pointers until fast reaches the end
+    while (fast) {
+      slow = slow?.next ?? null;
+      fast = fast.next;
+    }
+
+    return slow;
+  }
+
+  removeDuplicates() {
+    const uniqueValues = new Set<T>();
+
+    let current = this.head;
+    let prev: Node<T> | null = null;
+
+    while (current) {
+      if (uniqueValues.has(current.value)) {
+        if (prev) {
+          prev.next = current.next;
+        }
+        this.length--;
+      } else {
+        uniqueValues.add(current.value);
+        prev = current;
+      }
+      current = current.next;
+    }
+
+    return this;
+  }
+
+  binaryToDecimal(): number {
+    let decimal = 0;
+
+    let current = this.head;
+
+    while (current) {
+      decimal = decimal * 2 + (current.value as number);
+      current = current.next;
+    }
+
+    return decimal;
+  }
+
+  partitionList(x: number): LinkedList<T> {
+    let lessHead: Node<T> | null = null;
+    let lessTail: Node<T> | null = null;
+    let greaterHead: Node<T> | null = null;
+    let greaterTail: Node<T> | null = null;
+
+    let current = this.head;
+
+    while (current) {
+      const next = current.next;
+
+      current.next = null;
+
+      if ((current.value as number) < x) {
+        if (lessHead && lessTail) {
+          lessTail.next = current;
+          lessTail = current;
+        } else {
+          lessHead = current;
+          lessTail = current;
+        }
+      } else {
+        if (greaterHead && greaterTail) {
+          greaterTail.next = current;
+          greaterTail = current;
+        } else {
+          greaterHead = current;
+          greaterTail = current;
+        }
+      }
+      current = next;
+    }
+
+    if (lessTail) {
+      lessTail.next = greaterHead;
+    }
+
+    this.head = lessHead;
+    this.tail = greaterTail;
+
+    return this;
+  }
+
+  reverseBetween(start: number, end: number): LinkedList<T> {
+    if (!this.head || start < 0 || end >= this.length || start >= end) {
+      return this;
+    }
+
+    let current: Node<T> | null = this.head;
+    let prev: Node<T> | null = null;
+
+    // Move to the start of the section
+    for (let i = 0; i < start; i++) {
+      prev = current;
+      current = current?.next ?? null;
+    }
+
+    // prev = node before start section
+    // current = start of the section
+
+    const before = prev;
+    const startSection = current;
+
+    // Reverse the section between start and end
+    for (let i = start; i <= end; i++) {
+      const next = current?.next ?? null;
+
+      if (current) {
+        current.next = prev;
+      }
+
+      prev = current;
+      current = next;
+    }
+
+    // connect the head
+    if (before) {
+      before.next = prev;
+    } else {
+      this.head = prev;
+    }
+
+    if (startSection) {
+      startSection.next = current;
+    }
+
+    // Update the tail if necessary
+    if (end === this.length - 1) {
+      this.tail = startSection;
+    }
+
+    return this;
+  }
+
+  swapPairs(): LinkedList<T> {
+    if (!this.head || !this.head.next) {
+      return this;
+    }
+
+    let prev: Node<T> | null = null;
+    let current: Node<T> | null = this.head;
+
+    while (current && current.next) {
+      const first: Node<T> | null = current;
+      const second: Node<T> | null = first.next;
+
+      // Swap
+      first.next = second?.next ?? null;
+      if (second) second.next = first;
+
+      // Connect Prev pair to the current pair
+      if (prev) {
+        prev.next = second;
+      } else {
+        this.head = second;
+      }
+
+      // prev becomes the last node of the pair
+      prev = first;
+
+      // move the next pair
+
+      current = first.next;
+    }
+
+    this.tail = prev;
+
+    return this;
+  }
+
   log() {
     let temp = this.head;
     console.log("head", this.head);
